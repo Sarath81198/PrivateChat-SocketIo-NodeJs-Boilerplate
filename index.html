@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="box">
+    </div>
+        Your name : 
+        <input type="text" id="name">
+        <input type="submit" id="register" value="Submit"><br><br><br>
+        To: 
+        <input type="text" id="toUser"><br><Br>
+        Message: <br>
+        <input type="text" id="message">
+        <input type="submit" id="sendMessage">
+    <script>
+        var socket = io.connect();
+
+        var registerSubmit = document.getElementById("register")
+
+        registerSubmit.onclick = function(){
+            var name = document.getElementById("name").value;
+            console.log(name)
+
+            user = {
+                name : name,
+            }
+            socket.emit("new", user, function(data){
+                console.log(data)
+            })
+
+            var sendMessage = document.getElementById("sendMessage")
+
+            sendMessage.onclick = function(){
+                var message = document.getElementById("message").value
+                var toUser = document.getElementById("toUser").value
+                data = {
+                    fromUser: name,
+                    toUser: toUser,
+                    message: message
+                }
+                socket.emit("message", data, function(){
+                    console.log("Message Sent")
+                })
+            }
+            
+            socket.on("private_message", function (data) {
+                var box = document.getElementById("box")
+                box.append(data)
+                console.log(data)
+            })
+        }
+    </script>
+</body>
+</html>
